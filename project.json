@@ -1,0 +1,19 @@
+{
+  "overview": "Gestion Resto Fork is a comprehensive restaurant management SaaS application covering operations, kitchen logistics, HR, and finance. It features 17+ pages with real-time data synchronization, scenario-based financial projections, and detailed P&L reporting.",
+  "features": [
+    "Simulateur Carte / Laboratoire with dual performance + margin classification filters",
+    "Projections Financières: merged Projections + Rentabilité + Business Plan with 1/12/60-month horizons",
+    "Ventes & Opérations with daily/weekly/monthly/annual sub-tabs",
+    "Expanded Comptabilité with visual P&L and Capacité d'Autofinancement (annual + monthly)",
+    "Restaurant, RH, Finance, and Paramètres modules with React Query data sync"
+  ],
+  "category": "productivity",
+  "tags": [
+    "restaurant",
+    "saas",
+    "finance",
+    "projections",
+    "management"
+  ],
+  "last_updated": "2026-05-05T20:48:47.774Z"
+}

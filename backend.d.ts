@@ -1,0 +1,145 @@
+export interface Some<T> {
+    __kind__: "Some";
+    value: T;
+}
+export interface None {
+    __kind__: "None";
+}
+export type Option<T> = Some<T> | None;
+export interface Emprunt {
+    id: string;
+    nom: string;
+    tauxAnnuel: number;
+    differeMois: bigint;
+    dateDebut: string;
+    montant: number;
+    dureeMois: bigint;
+    bienAmortissable?: boolean;
+    bienNom?: string;
+    bienValeur?: number;
+    dateMiseService?: string;
+    bienDureeAns?: number;
+    typeEmprunt?: string;
+    bienCategorie?: string;
+    amortissementLieId?: string;
+}
+export interface RecetteIngredient {
+    unite: string;
+    quantite: number;
+    ingredientId: string;
+}
+export interface Recette {
+    id: string;
+    nom: string;
+    categorie: string;
+    tauxTVA: number;
+    prixVenteTTC: number;
+    consommablesHT: number;
+    ingredients: Array<RecetteIngredient>;
+    categorieTVA: string;
+}
+export interface VenteRecette {
+    id: string;
+    recetteId: string;
+    date: string;
+    quantite: number;
+}
+export interface ParametresRentabilite {
+    nbSemainesSaison: number;
+    nbClientsParSemaine: number;
+    ticketMoyenHT: number;
+    tauxFoodCostParCategorie: Array<[string, number]>;
+}
+export interface Ingredient {
+    id: string;
+    nom: string;
+    seuilSecurite: number;
+    stockInitial: number;
+    famille?: string;
+    unite: string;
+    prixUnitaireHT: number;
+}
+export interface ParametresJuridiques {
+    regimeSocial: string;
+    formeJuridique: string;
+    regimeFiscal: string;
+}
+export interface LigneAmortissement {
+    id: string;
+    nom: string;
+    coutTotal: number;
+    dureeMois: bigint;
+    dateMiseService?: string;
+    methode?: string;
+    empruntLieId?: string;
+}
+export interface AssocieGerant {
+    id: string;
+    nom: string;
+    statut: string;
+    remunerationAnnuelle: number;
+    typeAssocie?: string; partsCapital?: number; apportCapital?: number; dividendesAnnuels?: number;
+}
+export interface LigneFraisFixes {
+    nom: string;
+    montantMensuelHorsRemu: number;
+    montantMensuelAvecRemu: number;
+}
+export interface MouvementStock {
+    id: string;
+    motif: string;
+    date: string;
+    typeOp: string;
+    quantite: number;
+    ingredientId: string;
+}
+export interface Salarie {
+    id: string;
+    nom: string;
+    salaireAnnuelBrut: number;
+    poste: string;
+}
+export interface backendInterface {
+    createAmortissement(nom: string, coutTotal: number, dureeMois: bigint, dateMiseService?: string, methode?: string, empruntLieId?: string): Promise<LigneAmortissement>;
+    createAssocieGerant(nom: string, statut: string, remunerationAnnuelle: number, typeAssocie?: string, partsCapital?: number, apportCapital?: number): Promise<AssocieGerant>;
+    createEmprunt(nom: string, montant: number, tauxAnnuel: number, dureeMois: bigint, dateDebut: string, differeMois: bigint, bienAmortissable?: boolean, bienNom?: string, bienValeur?: number, dateMiseService?: string, bienDureeAns?: number, amortissementLieId?: string, typeEmprunt?: string, bienCategorie?: string): Promise<Emprunt>;
+    createIngredient(nom: string, unite: string, prixUnitaireHT: number, seuilSecurite: number, stockInitial: number, famille: string | null): Promise<Ingredient>;
+    createMouvement(ingredientId: string, date: string, typeOp: string, quantite: number, motif: string): Promise<MouvementStock>;
+    createRecette(nom: string, categorie: string, categorieTVA: string, tauxTVA: number, ings: Array<RecetteIngredient>, consommablesHT: number, prixVenteTTC: number): Promise<Recette>;
+    createSalarie(nom: string, poste: string, salaireAnnuelBrut: number): Promise<Salarie>;
+    createVente(recetteId: string, date: string, quantite: number, moyenPaiement?: string): Promise<VenteRecette>;
+    deleteAmortissement(id: string): Promise<boolean>;
+    deleteAssocieGerant(id: string): Promise<boolean>;
+    deleteEmprunt(id: string): Promise<boolean>;
+    deleteIngredient(id: string): Promise<boolean>;
+    deleteMouvement(id: string): Promise<boolean>;
+    deleteRecette(id: string): Promise<boolean>;
+    deleteSalarie(id: string): Promise<boolean>;
+    deleteVente(id: string): Promise<boolean>;
+    getAmortissements(): Promise<Array<LigneAmortissement>>;
+    getAssociesGerants(): Promise<Array<AssocieGerant>>;
+    getEmprunts(): Promise<Array<Emprunt>>;
+    getFamilles(): Promise<Array<string>>;
+    getFraisFixes(): Promise<Array<LigneFraisFixes>>;
+    getIngredients(): Promise<Array<Ingredient>>;
+    getJoursOuvertureParSemaine(): Promise<number>;
+    getMixProduitParCategorie(): Promise<Array<[string, number]>>;
+    getMouvementsStock(): Promise<Array<MouvementStock>>;
+    getParametres(): Promise<ParametresRentabilite>;
+    getParametresJuridiques(): Promise<ParametresJuridiques>;
+    getRecettes(): Promise<Array<Recette>>;
+    getSalaries(): Promise<Array<Salarie>>;
+    getVentesRecettes(): Promise<Array<VenteRecette>>;
+    saveFraisFixes(lignes: Array<LigneFraisFixes>): Promise<boolean>;
+    saveJoursOuvertureParSemaine(v: number): Promise<boolean>;
+    saveMixProduitParCategorie(m: Array<[string, number]>): Promise<boolean>;
+    saveParametres(p: ParametresRentabilite): Promise<boolean>;
+    saveParametresJuridiques(p: ParametresJuridiques): Promise<boolean>;
+    setFamilles(f: Array<string>): Promise<boolean>;
+    updateAmortissement(id: string, nom: string, coutTotal: number, dureeMois: bigint, dateMiseService?: string, methode?: string, empruntLieId?: string): Promise<boolean>;
+    updateAssocieGerant(id: string, nom: string, statut: string, remunerationAnnuelle: number, typeAssocie?: string, partsCapital?: number, apportCapital?: number): Promise<boolean>;
+    updateEmprunt(id: string, nom: string, montant: number, tauxAnnuel: number, dureeMois: bigint, dateDebut: string, differeMois: bigint, bienAmortissable?: boolean, bienNom?: string, bienValeur?: number, dateMiseService?: string, bienDureeAns?: number, amortissementLieId?: string, typeEmprunt?: string, bienCategorie?: string): Promise<boolean>;
+    updateIngredient(id: string, nom: string, unite: string, prixUnitaireHT: number, seuilSecurite: number, stockInitial: number, famille: string | null): Promise<boolean>;
+    updateRecette(id: string, nom: string, categorie: string, categorieTVA: string, tauxTVA: number, ings: Array<RecetteIngredient>, consommablesHT: number, prixVenteTTC: number): Promise<boolean>;
+    updateSalarie(id: string, nom: string, poste: string, salaireAnnuelBrut: number): Promise<boolean>;
+}

@@ -1,0 +1,19 @@
+import { useMemo, useState } from "react";
+import { useCreateVente, useRecettes, useVentesRecettes } from "@/hooks/useRestaurantQueries";
+import { fmtEur, prixHT } from "@/utils/format";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { CalendarDays, Check, ShoppingBasket } from "lucide-react";
+export default function VentesRapides(){
+ const {data: recettes=[]}=useRecettes(); const {data: ventes=[]}=useVentesRecettes(); const create=useCreateVente();
+ const [date,setDate]=useState(new Date().toISOString().slice(0,10)); const [mode,setMode]=useState("Carte bancaire"); const [q,setQ]=useState<Record<string,number>>({});
+ const day=useMemo(()=>ventes.filter(v=>v.date===date),[ventes,date]);
+ const ca=day.reduce((s,v)=>{const r=recettes.find(x=>x.id===v.recetteId);return s+(r?prixHT(r.prixVenteTTC,r.tauxTVA)*v.quantite:0)},0);
+ async function validate(){const rows=Object.entries(q).filter(([,n])=>n>0);if(!rows.length){toast.error("Saisissez au moins une quantité.");return;}try{for(const [id,n] of rows)await create.mutateAsync({recetteId:id,date,quantite:n,moyenPaiement:mode});setQ({});toast.success("Vente(s) enregistrée(s)");}catch{toast.error("Enregistrement impossible");}}
+ return <div className="space-y-6"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs uppercase tracking-[.22em] text-primary">Comptoir · saisie rapide</p><h2 className="text-2xl font-semibold">Ventes</h2><p className="text-sm text-muted-foreground">Saisissez les quantités vendues. Les recettes alimentent automatiquement le chiffre d’affaires et l’historique.</p></div><label className="text-sm">Date<Input type="date" value={date} onChange={e=>setDate(e.target.value)} className="mt-1"/></label></div>
+ <div className="grid gap-5 lg:grid-cols-[1fr_300px]"><Card><CardHeader><CardTitle className="text-base">Carte du jour</CardTitle></CardHeader><CardContent><div className="grid gap-2 sm:grid-cols-2">{recettes.map(r=><div key={r.id} className="flex items-center justify-between gap-3 rounded-lg border p-3"><div className="min-w-0"><div className="font-medium truncate">{r.nom}</div><div className="text-xs text-muted-foreground">{fmtEur(r.prixVenteTTC)} · {r.categorie}</div></div><Input aria-label={`Quantité ${r.nom}`} type="number" min="0" step="1" value={q[r.id]||""} onChange={e=>setQ({...q,[r.id]:Math.max(0,Number(e.target.value))})} className="w-20 text-right"/></div>)}{recettes.length===0&&<p className="py-8 text-sm text-muted-foreground">Ajoutez des recettes pour commencer la saisie.</p>}</div></CardContent></Card>
+ <Card className="h-fit border-primary/30"><CardHeader><CardTitle className="flex items-center gap-2 text-base"><ShoppingBasket className="h-4 w-4 text-primary"/>Résumé en direct</CardTitle></CardHeader><CardContent className="space-y-4"><label className="text-sm">Moyen de paiement<select className="mt-1 h-10 w-full rounded-md border bg-background px-3" value={mode} onChange={e=>setMode(e.target.value)}><option>Carte bancaire</option><option>Espèces</option><option>Ticket restaurant</option><option>Virement</option><option>Autre</option></select></label><div className="rounded-lg bg-muted p-4"><div className="text-xs text-muted-foreground">Chiffre d’affaires déjà saisi · HT</div><div className="text-2xl font-semibold">{fmtEur(ca)}</div></div><div className="text-sm text-muted-foreground">Articles à ajouter : {Object.values(q).reduce((a,b)=>a+b,0)}</div><Button className="w-full" onClick={()=>void validate()} disabled={create.isPending}><Check className="mr-2 h-4 w-4"/>Enregistrer les ventes</Button></CardContent></Card></div>
+ <div className="text-xs text-muted-foreground"><CalendarDays className="mr-1 inline h-3.5 w-3.5"/>Paiement enregistré avec chaque ligne de vente.</div></div>
+}
